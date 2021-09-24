@@ -424,6 +424,9 @@ LIGHTGBM_C_EXPORT int LGBM_DatasetGetNumFeature(DatasetHandle handle,
 LIGHTGBM_C_EXPORT int LGBM_DatasetAddFeaturesFrom(DatasetHandle target,
                                                   DatasetHandle source);
 
+LIGHTGBM_C_EXPORT int LGBM_DatasetSetFeatureMask(DatasetHandle handle,
+                                                 const char* mask);
+
 // --- start Booster interfaces
 
 /*!

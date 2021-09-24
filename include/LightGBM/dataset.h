@@ -382,7 +382,6 @@ class Dataset {
     }
   }
   inline void SetFeatureMask(const char* mask) {
-    int j = 0;
     num_features_ = 0;
     for (int i = 0; i < num_total_features_; ++i) {
       feature_mask_[i] = mask[i] == '1';
