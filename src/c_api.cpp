@@ -1565,6 +1565,15 @@ int LGBM_DatasetAddFeaturesFrom(DatasetHandle target,
   API_END();
 }
 
+
+int LGBM_DatasetSetFeatureMask(DatasetHandle handle,
+                               const char* mask) {
+  API_BEGIN();
+  auto dset = reinterpret_cast<Dataset*>(handle);
+  dset->SetFeatureMask(mask);
+  API_END();
+}
+
 // ---- start of booster
 
 int LGBM_BoosterCreate(const DatasetHandle train_data,

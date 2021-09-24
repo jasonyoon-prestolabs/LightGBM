@@ -1227,6 +1227,8 @@ class Dataset:
         self.pandas_categorical = None
         self.params_back_up = None
         self.feature_penalty = None
+        self.feature_mask = ""
+        self.num_total_features = 0
         self.monotone_constraints = None
         self.version = 0
         self._start_row = 0  # Used when pushing rows one by one.
@@ -1814,7 +1816,29 @@ class Dataset:
                                 categorical_feature=self.categorical_feature, params=self.params)
             if self.free_raw_data:
                 self.data = None
+        self.num_total_features = self.num_feature()
+        self.feature_mask = "1" * self.num_total_features
         return self
+
+    def set_feature_mask(self, mask):
+        """Set columns that user selectively intends to use
+
+        Parameters
+        ----------
+        mask: str, it is binary string, if ith char is 0 ith feature will be muted
+
+
+        Returns
+        -------
+        void
+        """
+        assert self.handle is not None, "the dataset is not construted yet"
+        assert len(mask) == self.num_total_features, \
+          f"{len(mask)} != {self.num_total_features}"
+        assert all(ch in ['0', '1'] for ch in mask), mask
+        self.feature_mask = mask
+        _safe_call(_LIB.LGBM_DatasetSetFeatureMask(ctypes.byref(self.handle),
+                                                   c_str(mask)))
 
     def create_valid(self, data, label=None, weight=None, group=None,
                      init_score=None, silent='warn', params=None):

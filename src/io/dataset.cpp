@@ -363,6 +363,7 @@ void Dataset::Construct(std::vector<std::unique_ptr<BinMapper>>* bin_mappers,
   }
   int cur_fidx = 0;
   used_feature_map_ = std::vector<int>(num_total_features_, -1);
+  feature_mask_ = std::vector<bool>(num_total_features_, true);
   num_groups_ = static_cast<int>(features_in_group.size());
   real_feature_idx_.resize(num_features_);
   feature2group_.resize(num_features_);

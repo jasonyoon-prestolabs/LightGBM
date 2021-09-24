@@ -381,12 +381,22 @@ class Dataset {
       }
     }
   }
+  inline void SetFeatureMask(const char* mask) {
+    int j = 0;
+    num_features_ = 0;
+    for (int i = 0; i < num_total_features_; ++i) {
+      feature_mask_[i] = mask[i] == '1';
+      if (feature_mask_[i] && used_feature_map_[i] >= 0)
+        num_features_++;
+    }
+  }
 
   inline int RealFeatureIndex(int fidx) const {
     return real_feature_idx_[fidx];
   }
 
   inline int InnerFeatureIndex(int col_idx) const {
+    if (!feature_mask_[col_idx]) return -1;
     return used_feature_map_[col_idx];
   }
   inline int Feature2Group(int feature_idx) const {
@@ -405,7 +415,7 @@ class Dataset {
   inline std::vector<int> ValidFeatureIndices() const {
     std::vector<int> ret;
     for (int i = 0; i < num_total_features_; ++i) {
-      if (used_feature_map_[i] >= 0) {
+      if (used_feature_map_[i] >= 0 && feature_mask_[i]) {
         ret.push_back(i);
       }
     }
@@ -687,6 +697,7 @@ class Dataset {
   std::vector<std::unique_ptr<FeatureGroup>> feature_groups_;
   /*! \brief Mapper from real feature index to used index*/
   std::vector<int> used_feature_map_;
+  std::vector<bool> feature_mask_;
   /*! \brief Number of used features*/
   int num_features_;
   /*! \brief Number of total features*/
