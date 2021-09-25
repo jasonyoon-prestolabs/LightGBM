@@ -398,7 +398,7 @@ class Dataset {
   }
 
   inline int InnerFeatureIndex(int col_idx) const {
-    if (!feature_mask_[col_idx]) return -1;
+    // if (!feature_mask_[col_idx]) return -1;
     return used_feature_map_[col_idx];
   }
   inline int Feature2Group(int feature_idx) const {
@@ -418,6 +418,7 @@ class Dataset {
     std::vector<int> ret;
     for (int i = 0; i < num_total_features_; ++i) {
       if (used_feature_map_[i] >= 0 && feature_mask_[i]) {
+      // if (used_feature_map_[i] >= 0) {
         ret.push_back(i);
       }
     }

@@ -1818,7 +1818,7 @@ class Dataset:
             self.feature_mask = "1" * self.num_total_features
             if self.free_raw_data:
                 self.data = None
-        # self.set_feature_mask(self.feature_mask)
+        self.set_feature_mask(self.feature_mask)
         return self
 
     def set_feature_mask(self, mask):
@@ -1838,7 +1838,7 @@ class Dataset:
         assert len(mask) == self.num_total_features, \
           f"{len(mask)} != {self.num_total_features}"
         assert all(ch in ['0', '1'] for ch in mask), mask
-        _LOGGER.info(f"set feature mask: {mask}")
+        # _LOGGER.info(f"set feature mask: {mask}")
         self.feature_mask = mask
         _safe_call(_LIB.LGBM_DatasetSetFeatureMask(self.handle,
                                                    c_str(mask)))

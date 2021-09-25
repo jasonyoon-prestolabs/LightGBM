@@ -726,6 +726,7 @@ void Dataset::CopyFeatureMapperFrom(const Dataset* dataset) {
 }
 
 void Dataset::CreateValid(const Dataset* dataset) {
+  DEBUG0("create valid")
   feature_groups_.clear();
   num_features_ = dataset->num_features_;
   num_groups_ = num_features_;
@@ -764,6 +765,7 @@ void Dataset::CreateValid(const Dataset* dataset) {
 
   feature_groups_.shrink_to_fit();
   used_feature_map_ = dataset->used_feature_map_;
+  feature_mask_ = dataset->feature_mask_;
   num_total_features_ = dataset->num_total_features_;
   feature_names_ = dataset->feature_names_;
   label_idx_ = dataset->label_idx_;

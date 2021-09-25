@@ -996,6 +996,7 @@ int LGBM_DatasetCreateByReference(const DatasetHandle reference,
                                   int64_t num_total_row,
                                   DatasetHandle* out) {
   API_BEGIN();
+  DEBUG0("create by reference");
   std::unique_ptr<Dataset> ret;
   ret.reset(new Dataset(static_cast<data_size_t>(num_total_row)));
   ret->CreateValid(reinterpret_cast<const Dataset*>(reference));

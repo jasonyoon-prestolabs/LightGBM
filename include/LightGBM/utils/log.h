@@ -28,6 +28,9 @@ namespace LightGBM {
 #define WARNING(x, ...) Log::Warning("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
 #define INFO(x, ...) Log::Info("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
 #define DEBUG(x, ...) Log::Debug("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
+#define WARNING0(x) Log::Warning("[%s:%d] " x, __FILENAME__, __LINE__);
+#define INFO0(x) Log::Info("[%s:%d] " x, __FILENAME__, __LINE__);
+#define DEBUG0(x) Log::Debug("[%s:%d] " x, __FILENAME__, __LINE__);
 
 #if defined(_MSC_VER)
 #define THREAD_LOCAL __declspec(thread)
@@ -150,14 +153,14 @@ class Log {
       } else {
         const size_t kBufSize = 512;
         char buf[kBufSize];
-        snprintf(buf, kBufSize, "[LightGBM] [%s]", level_str);
+        snprintf(buf, kBufSize, "[LightGBM] [%s] ", level_str);
         GetLogCallBack()(buf);
         vsnprintf(buf, kBufSize, format, val);
         GetLogCallBack()(buf);
         GetLogCallBack()("\n");
       }
 #else
-      Rprintf("[LightGBM] [%s]", level_str);
+      Rprintf("[LightGBM] [%s] ", level_str);
       Rvprintf(format, val);
       Rprintf("\n");
       R_FlushConsole();
