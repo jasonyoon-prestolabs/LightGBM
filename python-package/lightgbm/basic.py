@@ -1814,10 +1814,11 @@ class Dataset:
                                 init_score=self.init_score, predictor=self._predictor,
                                 silent=self.silent, feature_name=self.feature_name,
                                 categorical_feature=self.categorical_feature, params=self.params)
+            self.num_total_features = self.num_feature()
+            self.feature_mask = "1" * self.num_total_features
             if self.free_raw_data:
                 self.data = None
-        self.num_total_features = self.num_feature()
-        self.feature_mask = "1" * self.num_total_features
+        # self.set_feature_mask(self.feature_mask)
         return self
 
     def set_feature_mask(self, mask):
@@ -1832,12 +1833,14 @@ class Dataset:
         -------
         void
         """
+
         assert self.handle is not None, "the dataset is not construted yet"
         assert len(mask) == self.num_total_features, \
           f"{len(mask)} != {self.num_total_features}"
         assert all(ch in ['0', '1'] for ch in mask), mask
+        _LOGGER.info(f"set feature mask: {mask}")
         self.feature_mask = mask
-        _safe_call(_LIB.LGBM_DatasetSetFeatureMask(ctypes.byref(self.handle),
+        _safe_call(_LIB.LGBM_DatasetSetFeatureMask(self.handle,
                                                    c_str(mask)))
 
     def create_valid(self, data, label=None, weight=None, group=None,

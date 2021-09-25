@@ -322,6 +322,7 @@ void Dataset::Construct(std::vector<std::unique_ptr<BinMapper>>* bin_mappers,
                         const int* num_per_col, int num_sample_col,
                         size_t total_sample_cnt, const Config& io_config) {
   num_total_features_ = num_total_features;
+  DEBUG("num total features: %d", num_total_features);
   CHECK_EQ(num_total_features_, static_cast<int>(bin_mappers->size()));
   // get num_features
   std::vector<int> used_features;

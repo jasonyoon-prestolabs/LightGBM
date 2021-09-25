@@ -383,11 +383,14 @@ class Dataset {
   }
   inline void SetFeatureMask(const char* mask) {
     num_features_ = 0;
+    DEBUG("num total features: %d", num_total_features_);
     for (int i = 0; i < num_total_features_; ++i) {
       feature_mask_[i] = mask[i] == '1';
+      DEBUG("i: %d, feature_map: %d", i, used_feature_map_[i]);
       if (feature_mask_[i] && used_feature_map_[i] >= 0)
         num_features_++;
     }
+    DEBUG("mask: %s, num features: %d", mask, num_features_);
   }
 
   inline int RealFeatureIndex(int fidx) const {

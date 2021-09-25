@@ -765,6 +765,7 @@ Dataset* DatasetLoader::ConstructFromSampleData(double** sample_values,
       cp_ptr += bin_mappers[i]->SizesInByte();
     }
   }
+  DEBUG("num total features: %d", num_total_features);
   auto dataset = std::unique_ptr<Dataset>(new Dataset(num_data));
   dataset->Construct(&bin_mappers, num_total_features, forced_bin_bounds, sample_indices, sample_values, num_per_col, num_col, total_sample_size, config_);
   if (dataset->has_raw()) {
