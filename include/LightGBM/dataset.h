@@ -306,16 +306,20 @@ class Dataset {
 
   LIGHTGBM_EXPORT bool CheckAlign(const Dataset& other) const {
     if (num_features_ != other.num_features_) {
+      WARNING("differnt num features %d != %d", num_features_, other.num_features_);
       return false;
     }
     if (num_total_features_ != other.num_total_features_) {
+      WARNING("differnt num total features %d != %d", num_total_features_, other.num_total_features_);
       return false;
     }
     if (label_idx_ != other.label_idx_) {
+      WARNING("differnt label idx %d != %d", label_idx_, other.label_idx_);
       return false;
     }
     for (int i = 0; i < num_features_; ++i) {
       if (!FeatureBinMapper(i)->CheckAlign(*(other.FeatureBinMapper(i)))) {
+        WARNING("bin mapper not aligned for feature %d", i);
         return false;
       }
     }

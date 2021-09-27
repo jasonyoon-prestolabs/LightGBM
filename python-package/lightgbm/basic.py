@@ -2137,7 +2137,9 @@ class Dataset:
             return self
         if self.data is not None:
             self.reference = reference
-            return self._free_handle()
+            self._free_handle()
+            self.construct()
+            self.set_feature_mask(reference.feature_mask)
         else:
             raise LightGBMError("Cannot set reference after freed raw data, "
                                 "set free_raw_data=False when construct Dataset to avoid this.")
