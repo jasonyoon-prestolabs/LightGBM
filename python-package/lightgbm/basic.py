@@ -13,6 +13,8 @@ from os.path import getsize
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Tuple, Union
+import logging
+import logging.handlers
 
 import numpy as np
 import scipy.sparse
@@ -40,7 +42,27 @@ class _DummyLogger:
     def warning(self, msg: str) -> None:
         warnings.warn(msg, stacklevel=3)
 
+def get_logger(name=__file__, level=2):
+  if level == 1:
+    level = logging.WARNING
+  elif level == 2:
+    level = logging.INFO
+  elif level == 3:
+    level = logging.DEBUG
+  logger = logging.getLogger(name)
+  if logger.handlers:
+    return logger
+  logger.setLevel(level)
+  sh0 = logging.StreamHandler()
+  sh0.setLevel(level)
+  formatter = logging.Formatter('[%(levelname)-8s] [%(asctime)s] '
+                                '[%(filename)s] [%(funcName)s:%(lineno)d]'
+                                '%(message)s', '%Y-%m-%d %H:%M:%S')
+  sh0.setFormatter(formatter)
+  logger.addHandler(sh0)
+  return logger
 
+LOGGER = get_logger("basic")
 _LOGGER: Union[_DummyLogger, Logger] = _DummyLogger()
 
 
@@ -1815,13 +1837,13 @@ class Dataset:
                                 silent=self.silent, feature_name=self.feature_name,
                                 categorical_feature=self.categorical_feature, params=self.params)
             self.num_total_features = self.num_feature()
-            self.feature_mask = "1" * self.num_total_features
+            if not self.feature_mask:
+              self.set_feature_mask("1" * self.num_total_features)
             if self.free_raw_data:
                 self.data = None
-        self.set_feature_mask(self.feature_mask)
         return self
 
-    def set_feature_mask(self, mask):
+    def set_feature_mask(self, mask=None):
         """Set columns that user selectively intends to use
 
         Parameters
@@ -1833,12 +1855,14 @@ class Dataset:
         -------
         void
         """
-
+        assert self.num_total_features > 0
+        mask = mask or "1" * self.num_total_features
+        if mask == self.feature_mask:
+          return
         assert self.handle is not None, "the dataset is not construted yet"
         assert len(mask) == self.num_total_features, \
           f"{len(mask)} != {self.num_total_features}"
         assert all(ch in ['0', '1'] for ch in mask), mask
-        # _LOGGER.info(f"set feature mask: {mask}")
         self.feature_mask = mask
         _safe_call(_LIB.LGBM_DatasetSetFeatureMask(self.handle,
                                                    c_str(mask)))
@@ -2136,10 +2160,15 @@ class Dataset:
         if self.get_ref_chain().intersection(reference.get_ref_chain()):
             return self
         if self.data is not None:
+            ref_mask = reference.feature_mask
+            reference.set_feature_mask()
+            self.set_feature_mask()
             self.reference = reference
             self._free_handle()
             self.construct()
-            self.set_feature_mask(reference.feature_mask)
+            reference.set_feature_mask(ref_mask)
+            self.set_feature_mask(ref_mask)
+            return self
         else:
             raise LightGBMError("Cannot set reference after freed raw data, "
                                 "set free_raw_data=False when construct Dataset to avoid this.")
