@@ -2157,9 +2157,9 @@ class Dataset:
             .set_feature_name(reference.feature_name) \
             ._set_predictor(reference._predictor)
         # we're done if self and reference share a common upstream reference
-        if self.get_ref_chain().intersection(reference.get_ref_chain()) and \
-            reference.feature_mask == self.feature_mask:
+        if self.get_ref_chain().intersection(reference.get_ref_chain()):
             LOGGER.info("already referenced")
+            self.set_feature_mask(reference.feature_mask)
             return self
         if self.data is not None:
             ref_mask = reference.feature_mask
