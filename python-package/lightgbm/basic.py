@@ -2164,7 +2164,9 @@ class Dataset:
         if self.data is not None:
             ref_mask = reference.feature_mask
             reference.set_feature_mask()
-            self.set_feature_mask()
+            # initially construct if not constructed
+            if not self.handle is None:
+              self.construct()
             self.reference = reference
             self._free_handle()
             self.construct()
