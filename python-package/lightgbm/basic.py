@@ -2163,11 +2163,11 @@ class Dataset:
             return self
         if self.data is not None:
             ref_mask = reference.feature_mask
-            if not reference.handle is None:
+            if reference.handle is None:
               reference.construct()
             reference.set_feature_mask()
             # initially construct if not constructed
-            if not self.handle is None:
+            if self.handle is None:
               self.construct()
             self.reference = reference
             self._free_handle()
