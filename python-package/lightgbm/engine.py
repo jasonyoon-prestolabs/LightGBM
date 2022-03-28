@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import numpy as np
 
 from . import callback
-from .basic import Booster, Dataset, LightGBMError, _ConfigAliases, _InnerPredictor, _log_warning
+from .basic import Booster, Dataset, LightGBMError, _ConfigAliases, _InnerPredictor, _log_warning, get_logger
 from .compat import SKLEARN_INSTALLED, _LGBMGroupKFold, _LGBMStratifiedKFold
 
 _LGBM_CustomObjectiveFunction = Callable[
@@ -20,7 +20,7 @@ _LGBM_CustomMetricFunction = Callable[
     [Union[List, np.ndarray], Dataset],
     Tuple[str, float, bool]
 ]
-
+LOGGER = get_logger("engine")
 
 def train(
     params: Dict[str, Any],
@@ -165,6 +165,7 @@ def train(
     booster : Booster
         The trained Booster model.
     """
+
     # create predictor first
     params = copy.deepcopy(params)
     if fobj is not None:
@@ -227,6 +228,8 @@ def train(
                 name_valid_sets.append(valid_names[i])
             else:
                 name_valid_sets.append(f'valid_{i}')
+
+
     # process callbacks
     if callbacks is None:
         callbacks = set()
@@ -266,7 +269,6 @@ def train(
     callbacks_after_iter = callbacks - callbacks_before_iter
     callbacks_before_iter = sorted(callbacks_before_iter, key=attrgetter('order'))
     callbacks_after_iter = sorted(callbacks_after_iter, key=attrgetter('order'))
-
     # construct booster
     try:
         booster = Booster(params=params, train_set=train_set)

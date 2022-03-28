@@ -996,6 +996,7 @@ int LGBM_DatasetCreateByReference(const DatasetHandle reference,
                                   int64_t num_total_row,
                                   DatasetHandle* out) {
   API_BEGIN();
+  DEBUG0("create by reference");
   std::unique_ptr<Dataset> ret;
   ret.reset(new Dataset(static_cast<data_size_t>(num_total_row)));
   ret->CreateValid(reinterpret_cast<const Dataset*>(reference));
@@ -1562,6 +1563,15 @@ int LGBM_DatasetAddFeaturesFrom(DatasetHandle target,
   auto target_d = reinterpret_cast<Dataset*>(target);
   auto source_d = reinterpret_cast<Dataset*>(source);
   target_d->AddFeaturesFrom(source_d);
+  API_END();
+}
+
+
+int LGBM_DatasetSetFeatureMask(DatasetHandle handle,
+                               const char* mask) {
+  API_BEGIN();
+  auto dset = reinterpret_cast<Dataset*>(handle);
+  dset->SetFeatureMask(mask);
   API_END();
 }
 

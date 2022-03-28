@@ -24,6 +24,14 @@ extern "C" void R_FlushConsole(void);
 
 namespace LightGBM {
 
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+#define WARNING(x, ...) Log::Warning("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
+#define INFO(x, ...) Log::Info("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
+#define DEBUG(x, ...) Log::Debug("[%s:%d] " x, __FILENAME__, __LINE__, __VA_ARGS__);
+#define WARNING0(x) Log::Warning("[%s:%d] " x, __FILENAME__, __LINE__);
+#define INFO0(x) Log::Info("[%s:%d] " x, __FILENAME__, __LINE__);
+#define DEBUG0(x) Log::Debug("[%s:%d] " x, __FILENAME__, __LINE__);
+
 #if defined(_MSC_VER)
 #define THREAD_LOCAL __declspec(thread)
 #else

@@ -322,6 +322,7 @@ void Dataset::Construct(std::vector<std::unique_ptr<BinMapper>>* bin_mappers,
                         const int* num_per_col, int num_sample_col,
                         size_t total_sample_cnt, const Config& io_config) {
   num_total_features_ = num_total_features;
+  DEBUG("num total features: %d", num_total_features);
   CHECK_EQ(num_total_features_, static_cast<int>(bin_mappers->size()));
   // get num_features
   std::vector<int> used_features;
@@ -363,6 +364,7 @@ void Dataset::Construct(std::vector<std::unique_ptr<BinMapper>>* bin_mappers,
   }
   int cur_fidx = 0;
   used_feature_map_ = std::vector<int>(num_total_features_, -1);
+  feature_mask_ = std::vector<bool>(num_total_features_, true);
   num_groups_ = static_cast<int>(features_in_group.size());
   real_feature_idx_.resize(num_features_);
   feature2group_.resize(num_features_);
@@ -724,6 +726,7 @@ void Dataset::CopyFeatureMapperFrom(const Dataset* dataset) {
 }
 
 void Dataset::CreateValid(const Dataset* dataset) {
+  DEBUG0("create valid")
   feature_groups_.clear();
   num_features_ = dataset->num_features_;
   num_groups_ = num_features_;
@@ -762,6 +765,7 @@ void Dataset::CreateValid(const Dataset* dataset) {
 
   feature_groups_.shrink_to_fit();
   used_feature_map_ = dataset->used_feature_map_;
+  feature_mask_ = dataset->feature_mask_;
   num_total_features_ = dataset->num_total_features_;
   feature_names_ = dataset->feature_names_;
   label_idx_ = dataset->label_idx_;

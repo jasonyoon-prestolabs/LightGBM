@@ -306,16 +306,20 @@ class Dataset {
 
   LIGHTGBM_EXPORT bool CheckAlign(const Dataset& other) const {
     if (num_features_ != other.num_features_) {
+      WARNING("differnt num features %d != %d", num_features_, other.num_features_);
       return false;
     }
     if (num_total_features_ != other.num_total_features_) {
+      WARNING("differnt num total features %d != %d", num_total_features_, other.num_total_features_);
       return false;
     }
     if (label_idx_ != other.label_idx_) {
+      WARNING("differnt label idx %d != %d", label_idx_, other.label_idx_);
       return false;
     }
     for (int i = 0; i < num_features_; ++i) {
       if (!FeatureBinMapper(i)->CheckAlign(*(other.FeatureBinMapper(i)))) {
+        WARNING("bin mapper not aligned for feature %d", i);
         return false;
       }
     }
@@ -381,12 +385,24 @@ class Dataset {
       }
     }
   }
+  inline void SetFeatureMask(const char* mask) {
+    num_features_ = 0;
+    DEBUG("num total features: %d", num_total_features_);
+    for (int i = 0; i < num_total_features_; ++i) {
+      feature_mask_[i] = mask[i] == '1';
+      DEBUG("i: %d, feature_map: %d", i, used_feature_map_[i]);
+      if (feature_mask_[i] && used_feature_map_[i] >= 0)
+        num_features_++;
+    }
+    DEBUG("mask: %s, num features: %d", mask, num_features_);
+  }
 
   inline int RealFeatureIndex(int fidx) const {
     return real_feature_idx_[fidx];
   }
 
   inline int InnerFeatureIndex(int col_idx) const {
+    // if (!feature_mask_[col_idx]) return -1;
     return used_feature_map_[col_idx];
   }
   inline int Feature2Group(int feature_idx) const {
@@ -405,7 +421,8 @@ class Dataset {
   inline std::vector<int> ValidFeatureIndices() const {
     std::vector<int> ret;
     for (int i = 0; i < num_total_features_; ++i) {
-      if (used_feature_map_[i] >= 0) {
+      if (used_feature_map_[i] >= 0 && feature_mask_[i]) {
+      // if (used_feature_map_[i] >= 0) {
         ret.push_back(i);
       }
     }
@@ -687,6 +704,7 @@ class Dataset {
   std::vector<std::unique_ptr<FeatureGroup>> feature_groups_;
   /*! \brief Mapper from real feature index to used index*/
   std::vector<int> used_feature_map_;
+  std::vector<bool> feature_mask_;
   /*! \brief Number of used features*/
   int num_features_;
   /*! \brief Number of total features*/
